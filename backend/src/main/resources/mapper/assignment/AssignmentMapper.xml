@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haedong.backend.assignment.AssignmentMapper">
+
+    <resultMap id="ViewResultMap" type="com.haedong.backend.assignment.VehicleAssignmentView">
+        <result property="routeNo"     column="route_no"/>
+        <result property="vehicleId"   column="vehicle_id"/>
+        <result property="driverId1"   column="driver_id_1"/>
+        <result property="driverName1" column="driver_name_1"/>
+        <result property="driverId2"   column="driver_id_2"/>
+        <result property="driverName2" column="driver_name_2"/>
+    </resultMap>
+
+    <resultMap id="SubstituteResultMap" type="com.haedong.backend.assignment.SubstituteDriverView">
+        <result property="id"       column="id"/>
+        <result property="name"     column="name"/>
+        <result property="hireDate" column="hire_date"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="ViewResultMap">
+        SELECT v.route_no,
+               v.vehicle_id,
+               va.driver_id_1,
+               d1.name AS driver_name_1,
+               va.driver_id_2,
+               d2.name AS driver_name_2
+        FROM hd_bus_vehicle v
+        LEFT JOIN hd_vehicle_assignment va ON v.vehicle_id = va.vehicle_id
+        LEFT JOIN hd_driver d1 ON va.driver_id_1 = d1.id
+        LEFT JOIN hd_driver d2 ON va.driver_id_2 = d2.id
+        ORDER BY v.route_no, v.vehicle_id
+    </select>
+
+    <select id="findSubstitutes" resultMap="SubstituteResultMap">
+        SELECT id, name,
+               EXTRACT(EPOCH FROM hire_date) * 1000 AS hire_date
+        FROM hd_driver
+        WHERE id NOT IN (
+            SELECT driver_id_1 FROM hd_vehicle_assignment WHERE driver_id_1 IS NOT NULL
+            UNION
+            SELECT driver_id_2 FROM hd_vehicle_assignment WHERE driver_id_2 IS NOT NULL
+        )
+        ORDER BY hire_date ASC
+    </select>
+
+    <insert id="upsert" parameterType="com.haedong.backend.assignment.VehicleAssignment">
+        INSERT INTO hd_vehicle_assignment (vehicle_id, driver_id_1, driver_id_2, updated_by)
+        VALUES (#{vehicleId}, #{driverId1}, #{driverId2}, #{updatedBy})
+        ON CONFLICT (vehicle_id) DO UPDATE
+        SET driver_id_1 = #{driverId1},
+            driver_id_2 = #{driverId2},
+            updated_at = now(),
+            updated_by = #{updatedBy}
+    </insert>
+
+    <delete id="delete" parameterType="String">
+        DELETE FROM hd_vehicle_assignment
+        WHERE vehicle_id = #{vehicleId}
+    </delete>
+
+</mapper>

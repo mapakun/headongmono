@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haedong.backend.vehicle.VehicleMapper">
+
+    <resultMap id="VehicleResultMap" type="com.haedong.backend.vehicle.Vehicle">
+        <id     property="vehicleId"   column="vehicle_id"/>
+        <result property="routeNo"     column="route_no"/>
+        <result property="vehicleType" column="vehicle_type"/>
+        <result property="status"      column="status"/>
+        <result property="createdAt"   column="created_at"/>
+        <result property="updatedAt"   column="updated_at"/>
+        <result property="updatedBy"   column="updated_by"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="VehicleResultMap">
+        SELECT vehicle_id, route_no, vehicle_type, status,
+               EXTRACT(EPOCH FROM created_at) * 1000 AS created_at,
+               EXTRACT(EPOCH FROM updated_at) * 1000 AS updated_at,
+               updated_by
+        FROM hd_bus_vehicle
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="VehicleResultMap">
+        SELECT vehicle_id, route_no, vehicle_type, status,
+               EXTRACT(EPOCH FROM created_at) * 1000 AS created_at,
+               EXTRACT(EPOCH FROM updated_at) * 1000 AS updated_at,
+               updated_by
+        FROM hd_bus_vehicle
+        WHERE vehicle_id = #{vehicleId}
+    </select>
+
+    <insert id="insert" parameterType="com.haedong.backend.vehicle.Vehicle">
+        INSERT INTO hd_bus_vehicle (vehicle_id, route_no, vehicle_type, status, updated_by)
+        VALUES (#{vehicleId}, #{routeNo}, #{vehicleType}, #{status}, #{updatedBy})
+    </insert>
+
+    <update id="update" parameterType="com.haedong.backend.vehicle.Vehicle">
+        UPDATE hd_bus_vehicle
+        SET route_no = #{routeNo},
+            vehicle_type = #{vehicleType},
+            status = #{status},
+            updated_at = now(),
+            updated_by = #{updatedBy}
+        WHERE vehicle_id = #{vehicleId}
+    </update>
+
+    <delete id="delete" parameterType="String">
+        DELETE FROM hd_bus_vehicle
+        WHERE vehicle_id = #{vehicleId}
+    </delete>
+
+</mapper>

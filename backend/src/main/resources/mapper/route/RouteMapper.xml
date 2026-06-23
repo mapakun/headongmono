@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haedong.backend.route.RouteMapper">
+
+    <resultMap id="RouteResultMap" type="com.haedong.backend.route.Route">
+        <id     property="routeNo"       column="route_no"/>
+        <result property="routeName"     column="route_name"/>
+        <result property="totalVehicles" column="total_vehicles"/>
+        <result property="status"        column="status"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+        <result property="updatedBy"     column="updated_by"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="RouteResultMap">
+        SELECT route_no, route_name, total_vehicles, status,
+               EXTRACT(EPOCH FROM created_at) * 1000 AS created_at,
+               EXTRACT(EPOCH FROM updated_at) * 1000 AS updated_at,
+               updated_by
+        FROM hd_bus_route
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="RouteResultMap">
+        SELECT route_no, route_name, total_vehicles, status,
+               EXTRACT(EPOCH FROM created_at) * 1000 AS created_at,
+               EXTRACT(EPOCH FROM updated_at) * 1000 AS updated_at,
+               updated_by
+        FROM hd_bus_route
+        WHERE route_no = #{routeNo}
+    </select>
+
+    <insert id="insert" parameterType="com.haedong.backend.route.Route">
+        INSERT INTO hd_bus_route (route_no, route_name, total_vehicles, status, updated_by)
+        VALUES (#{routeNo}, #{routeName}, #{totalVehicles}, #{status}, #{updatedBy})
+    </insert>
+
+    <update id="update" parameterType="com.haedong.backend.route.Route">
+        UPDATE hd_bus_route
+        SET route_name = #{routeName},
+            total_vehicles = #{totalVehicles},
+            status = #{status},
+            updated_at = now(),
+            updated_by = #{updatedBy}
+        WHERE route_no = #{routeNo}
+    </update>
+
+    <delete id="delete" parameterType="String">
+        DELETE FROM hd_bus_route
+        WHERE route_no = #{routeNo}
+    </delete>
+
+</mapper>

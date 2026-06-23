@@ -1,0 +1,44 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: haedong-backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - haedong-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: haedong-frontend
+    networks:
+      - haedong-net
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: haedong-nginx
+    ports:
+      - "80:80"
+    networks:
+      - haedong-net
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+
+networks:
+  haedong-net:
+    driver: bridge

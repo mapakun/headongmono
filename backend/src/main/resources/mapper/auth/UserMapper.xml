@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haedong.backend.auth.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.haedong.backend.auth.User">
+        <id     property="id"        column="id"/>
+        <result property="username"  column="username"/>
+        <result property="password"  column="password"/>
+        <result property="role"      column="role"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="updatedBy" column="updated_by"/>
+    </resultMap>
+
+    <select id="findById" parameterType="String" resultMap="UserResultMap">
+        SELECT id, username, password, role
+        FROM hd_user
+        WHERE id = #{id}
+    </select>
+
+</mapper>

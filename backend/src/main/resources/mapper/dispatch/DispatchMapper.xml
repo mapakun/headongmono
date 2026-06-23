@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haedong.backend.dispatch.DispatchMapper">
+
+    <resultMap id="DispatchResultMap" type="com.haedong.backend.dispatch.Dispatch">
+        <id     property="dispatchId"   column="dispatch_id"/>
+        <result property="driverId"     column="driver_id"/>
+        <result property="vehicleId"    column="vehicle_id"/>
+        <result property="dispatchDate" column="dispatch_date"/>
+        <result property="shift"        column="shift"/>
+        <result property="status"       column="status"/>
+        <result property="createdAt"    column="created_at"/>
+        <result property="updatedAt"    column="updated_at"/>
+        <result property="updatedBy"    column="updated_by"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="DispatchResultMap">
+        SELECT dispatch_id, driver_id, vehicle_id,
+               EXTRACT(EPOCH FROM dispatch_date) * 1000 AS dispatch_date,
+               shift, status,
+               EXTRACT(EPOCH FROM created_at) * 1000 AS created_at,
+               EXTRACT(EPOCH FROM updated_at) * 1000 AS updated_at,
+               updated_by
+        FROM hd_dispatch
+        ORDER BY dispatch_date DESC, created_at DESC
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="DispatchResultMap">
+        SELECT dispatch_id, driver_id, vehicle_id,
+               EXTRACT(EPOCH FROM dispatch_date) * 1000 AS dispatch_date,
+               shift, status,
+               EXTRACT(EPOCH FROM created_at) * 1000 AS created_at,
+               EXTRACT(EPOCH FROM updated_at) * 1000 AS updated_at,
+               updated_by
+        FROM hd_dispatch
+        WHERE dispatch_id = #{dispatchId}
+    </select>
+
+    <insert id="insert" parameterType="com.haedong.backend.dispatch.Dispatch">
+        INSERT INTO hd_dispatch (dispatch_id, driver_id, vehicle_id, dispatch_date, shift, status, updated_by)
+        VALUES (
+            #{dispatchId}, #{driverId}, #{vehicleId},
+            to_timestamp(#{dispatchDate} / 1000.0),
+            #{shift}, #{status}, #{updatedBy}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.haedong.backend.dispatch.Dispatch">
+        UPDATE hd_dispatch
+        SET driver_id = #{driverId},
+            vehicle_id = #{vehicleId},
+            dispatch_date = to_timestamp(#{dispatchDate} / 1000.0),
+            shift = #{shift},
+            status = #{status},
+            updated_at = now(),
+            updated_by = #{updatedBy}
+        WHERE dispatch_id = #{dispatchId}
+    </update>
+
+    <delete id="delete" parameterType="String">
+        DELETE FROM hd_dispatch
+        WHERE dispatch_id = #{dispatchId}
+    </delete>
+
+</mapper>

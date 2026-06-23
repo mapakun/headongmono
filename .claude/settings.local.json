@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\hayok\\\\Desktop\\\\workspace\\\\project\\\\haeDongToyProject\\\\container\\\\backend\\\\src\" -Recurse | Where-Object { !$_.PSIsContainer })",
+      "Bash(python3 -c ' *)",
+      "PowerShell(& \"C:\\\\Users\\\\hayok\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" -c \"import pandas; print\\('ok'\\)\" 2>&1)",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "Bash(python update_table_spec.py)",
+      "Bash(python -c ' *)",
+      "Bash(move \"C:\\\\Users\\\\hayok\\\\Desktop\\\\workspace\\\\project\\\\haeDongToyProject\\\\container\\\\backend\\\\src\\\\main\\\\resources\\\\mapper\\\\UserMapper.xml\" \"C:\\\\Users\\\\hayok\\\\Desktop\\\\workspace\\\\project\\\\haeDongToyProject\\\\container\\\\backend\\\\src\\\\main\\\\resources\\\\mapper\\\\auth\\\\UserMapper.xml\")",
+      "Bash(./gradlew build *)",
+      "Bash(./gradlew bootRun)",
+      "Bash(pip install *)",
+      "Read(//tmp/**)",
+      "Bash(mkdir -p /tmp)"
+    ]
+  }
+}
